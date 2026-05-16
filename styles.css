@@ -1,8 +1,190 @@
-/*
+/* ── Control Panel container ─────────────────────────────────────────────── */
+.ndp-control-panel {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+	background-color: var(--background-primary);
+	color: var(--text-normal);
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+/* ── Panel header ─────────────────────────────────────────────────────────── */
+.ndp-panel-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-shrink: 0;
+	padding: 6px 10px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	background-color: var(--background-secondary);
+	gap: 6px;
+	flex-wrap: wrap;
+}
 
-If your plugin does not need CSS, delete this file.
+.ndp-panel-title {
+	font-weight: 600;
+	font-size: 0.9em;
+	color: var(--text-normal);
+	white-space: nowrap;
+}
 
-*/
+.ndp-header-controls {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	flex-wrap: wrap;
+}
+
+/* ── Preset selector ──────────────────────────────────────────────────────── */
+.ndp-preset-select {
+	font-size: 0.82em;
+	padding: 2px 4px;
+	border-radius: var(--radius-s);
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-primary);
+	color: var(--text-normal);
+	max-width: 140px;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+.ndp-btn {
+	font-size: 0.78em;
+	padding: 2px 8px;
+	border-radius: var(--radius-s);
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--interactive-normal);
+	color: var(--text-normal);
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.ndp-btn:hover {
+	background-color: var(--interactive-hover);
+}
+
+.ndp-btn-danger {
+	border-color: var(--text-error);
+	color: var(--text-error);
+}
+
+.ndp-btn-danger:hover {
+	background-color: var(--background-modifier-error);
+}
+
+/* ── Module stack (scrollable) ────────────────────────────────────────────── */
+.ndp-module-stack {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	overflow-y: auto;
+	padding: 6px;
+	gap: 6px;
+}
+
+/* ── Widget host ──────────────────────────────────────────────────────────── */
+.ndp-widget-host {
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	overflow: hidden;
+	background-color: var(--background-primary);
+}
+
+/* ── Widget header ────────────────────────────────────────────────────────── */
+.ndp-widget-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 4px 8px;
+	background-color: var(--background-secondary);
+	border-bottom: 1px solid var(--background-modifier-border);
+	flex-shrink: 0;
+	gap: 6px;
+}
+
+.ndp-widget-title {
+	font-size: 0.8em;
+	font-weight: 600;
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	flex: 1 1 auto;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.ndp-widget-controls {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	flex-shrink: 0;
+}
+
+/* ── Height selector inside widget ───────────────────────────────────────── */
+.ndp-height-select {
+	font-size: 0.75em;
+	padding: 1px 3px;
+	border-radius: var(--radius-s);
+	border: 1px solid var(--background-modifier-border);
+	background-color: var(--background-primary);
+	color: var(--text-muted);
+}
+
+/* ── Collapse button ──────────────────────────────────────────────────────── */
+.ndp-collapse-btn {
+	font-size: 0.85em;
+	width: 20px;
+	height: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--radius-s);
+	border: 1px solid var(--background-modifier-border);
+	background: transparent;
+	color: var(--text-muted);
+	cursor: pointer;
+	padding: 0;
+	line-height: 1;
+}
+
+.ndp-collapse-btn:hover {
+	background-color: var(--interactive-hover);
+	color: var(--text-normal);
+}
+
+/* ── Widget content area ──────────────────────────────────────────────────── */
+.ndp-widget-content {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	padding: 8px;
+}
+
+/* ── Placeholder (module not yet loaded) ──────────────────────────────────── */
+.ndp-placeholder {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	min-height: 60px;
+	color: var(--text-faint);
+	font-size: 0.82em;
+	font-style: italic;
+	text-align: center;
+	padding: 12px;
+	border: 1px dashed var(--background-modifier-border);
+	border-radius: var(--radius-s);
+}
+
+/* ── Empty state (no slots in preset) ────────────────────────────────────── */
+.ndp-empty-state {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px 16px;
+	color: var(--text-faint);
+	font-size: 0.85em;
+	text-align: center;
+}
