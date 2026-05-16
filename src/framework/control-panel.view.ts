@@ -64,6 +64,9 @@ export class ControlPanelView extends ItemView {
 				this.eventBus.emit('active-file-changed', { file });
 			})
 		);
+
+		// Notify modules of the file that is already open when the panel loads.
+		this.eventBus.emit('active-file-changed', { file: this.app.workspace.getActiveFile() });
 	}
 
 	async onClose(): Promise<void> {

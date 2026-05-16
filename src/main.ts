@@ -5,6 +5,7 @@ import { EventBus } from './core/event-bus';
 import { ModuleRegistry } from './core/module-registry';
 import { createDefaultLayout } from './core/layout-store';
 import { ControlPanelView, CONTROL_PANEL_VIEW_TYPE } from './framework/control-panel.view';
+import { NoteAnatomyModule } from './modules/note-anatomy/note-anatomy.module';
 
 export default class NoteDetailsPlugin extends Plugin {
 	settings: PluginSettings;
@@ -32,6 +33,7 @@ export default class NoteDetailsPlugin extends Plugin {
 
 		this.addSettingTab(new NoteDetailsSettingTab(this.app, this));
 
+		this.registry.register(new NoteAnatomyModule());
 		this.registry.loadAll(this.app, this.eventBus);
 	}
 
