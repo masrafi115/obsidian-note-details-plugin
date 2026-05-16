@@ -190,6 +190,101 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   MODULE 1 — Focal Node Graph
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.fn-view {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+}
+
+/* ── Controls row ─────────────────────────────────────────────────────────── */
+.fn-controls {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: 4px 4px 4px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	flex-shrink: 0;
+}
+
+.fn-ctrl-label {
+	font-size: 0.78em;
+	color: var(--text-muted);
+	white-space: nowrap;
+}
+
+.fn-depth-slider {
+	width: 90px;
+	cursor: pointer;
+	accent-color: var(--interactive-accent);
+}
+
+.fn-depth-value {
+	font-size: 0.78em;
+	font-weight: 600;
+	color: var(--interactive-accent);
+	min-width: 12px;
+	text-align: center;
+}
+
+/* ── Legend ───────────────────────────────────────────────────────────────── */
+.fn-legend {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-left: auto;
+}
+
+.fn-legend-item {
+	display: flex;
+	align-items: center;
+	gap: 3px;
+}
+
+.fn-legend-dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+
+.fn-legend-label {
+	font-size: 0.72em;
+	color: var(--text-muted);
+	white-space: nowrap;
+}
+
+/* ── Graph canvas container ───────────────────────────────────────────────── */
+.fn-graph-container {
+	flex: 1 1 auto;
+	overflow: hidden;
+	background-color: var(--background-primary);
+	position: relative;
+}
+
+/* Cytoscape canvas fills its container */
+.fn-graph-container canvas {
+	display: block;
+}
+
+.fn-empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	min-height: 80px;
+	color: var(--text-faint);
+	font-size: 0.82em;
+	font-style: italic;
+	text-align: center;
+	padding: 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    MODULE 2 — Connectivity Leaderboard
    ═══════════════════════════════════════════════════════════════════════════ */
 

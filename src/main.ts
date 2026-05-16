@@ -7,6 +7,7 @@ import { createDefaultLayout } from './core/layout-store';
 import { ControlPanelView, CONTROL_PANEL_VIEW_TYPE } from './framework/control-panel.view';
 import { NoteAnatomyModule } from './modules/note-anatomy/note-anatomy.module';
 import { ConnectivityModule } from './modules/connectivity/connectivity.module';
+import { FocalNodeModule } from './modules/focal-node/focal-node.module';
 
 export default class NoteDetailsPlugin extends Plugin {
 	settings: PluginSettings;
@@ -34,6 +35,7 @@ export default class NoteDetailsPlugin extends Plugin {
 
 		this.addSettingTab(new NoteDetailsSettingTab(this.app, this));
 
+		this.registry.register(new FocalNodeModule());
 		this.registry.register(new NoteAnatomyModule());
 		this.registry.register(new ConnectivityModule());
 		this.registry.loadAll(this.app, this.eventBus);
