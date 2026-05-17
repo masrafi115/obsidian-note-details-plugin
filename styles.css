@@ -531,6 +531,110 @@
 	border-bottom: none;
 }
 
+/* ── Cross-Vault Dependencies (cv-*) ─────────────────────────────────────── */
+.cv-view {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+}
+
+/* Toolbar: scan + export buttons + status */
+.cv-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+	padding: 6px 8px;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.cv-btn {
+	padding: 3px 10px;
+	font-size: 0.8em;
+	border-radius: var(--radius-s);
+	border: 1px solid var(--background-modifier-border);
+	background: var(--interactive-normal);
+	color: var(--text-normal);
+	cursor: pointer;
+}
+.cv-btn:hover {
+	background: var(--interactive-hover);
+}
+
+.cv-status {
+	font-size: 0.78em;
+	color: var(--text-muted);
+	margin-left: auto;
+	white-space: nowrap;
+}
+
+/* Shared row grid — 3 equal-width columns */
+.cv-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1.5fr;
+	gap: 0 6px;
+	align-items: center;
+	padding: 3px 8px;
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+.cv-row:last-child {
+	border-bottom: none;
+}
+
+/* Sticky column header */
+.cv-header {
+	font-size: 0.75em;
+	font-weight: 600;
+	color: var(--text-muted);
+	flex-shrink: 0;
+	border-bottom: 2px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+}
+
+/* Scrollable body */
+.cv-table-body {
+	overflow-y: auto;
+	flex: 1;
+}
+
+/* Cell base */
+.cv-cell {
+	font-size: 0.8em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Source file — clickable link */
+.cv-source {
+	color: var(--interactive-accent);
+	text-decoration: none;
+	cursor: pointer;
+}
+.cv-source:hover {
+	text-decoration: underline;
+}
+
+/* Target vault */
+.cv-vault {
+	color: var(--text-normal);
+}
+
+/* Target file */
+.cv-file {
+	color: var(--text-muted);
+}
+
+/* Empty state */
+.cv-empty {
+	font-size: 0.82em;
+	font-style: italic;
+	color: var(--text-faint);
+	padding: 12px 8px;
+	text-align: center;
+}
+
 .nan-url-link {
 	font-size: 0.78em;
 	color: var(--link-color);
