@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"c:\\\\software\\\\obsidian\\\\dev\\\\Standards and More\\\\.obsidian\\\\plugins\\\\obsidian-note-details-plugin\\\\src\\\\modules\\\\note-anatomy\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"c:\\\\software\\\\obsidian\\\\dev\\\\Standards and More\\\\.obsidian\\\\plugins\\\\obsidian-note-details-plugin\\\\src\\\\modules\\\\connectivity\")",
+      "PowerShell(node -e \"const p = require\\('./node_modules/cytoscape/package.json'\\); console.log\\('types:', p.types || p.typings || 'none'\\); console.log\\('version:', p.version\\);\")",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"c:\\\\software\\\\obsidian\\\\dev\\\\Standards and More\\\\.obsidian\\\\plugins\\\\obsidian-note-details-plugin\\\\src\\\\modules\\\\focal-node\")"
+    ]
+  }
+}
