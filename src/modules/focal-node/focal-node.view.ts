@@ -126,6 +126,7 @@ export class FocalNodeView {
 				color:   NODE_COLORS[n.type] ?? '#888',
 				opacity: this.computeOpacity(n),
 				size:    this.computeSize(n),
+				distance: n.distance,
 			},
 		}));
 
