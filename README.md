@@ -1,90 +1,144 @@
-# Obsidian Sample Plugin
+# Obsidian Note Details Plugin
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+A modular sidebar plugin for Obsidian that surfaces structural details about your notes — headings, links, graph relationships, and cross-vault references — in a configurable, preset-driven control panel.
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+---
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open modal (simple)" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## Architecture Overview
 
-## First time developing plugins?
+The plugin uses a **modular, event-driven architecture**. A central registry manages independently-loadable feature modules; a typed event bus decouples modules from each other and from the UI.
 
-Quick starting guide for new plugin devs:
-
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
-
-## Releasing new releases
-
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
-
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
-
-## Adding your plugin to the community plugin list
-
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
-
-## How to use
-
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
-
-## Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-## Improve code quality with eslint
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- This project already has eslint preconfigured, you can invoke a check by running`npm run lint`
-- Together with a custom eslint [plugin](https://github.com/obsidianmd/eslint-plugin) for Obsidan specific code guidelines.
-- A GitHub action is preconfigured to automatically lint every commit on all branches.
-
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+```
+main.ts (Plugin)
+├── EventBus                    ← typed pub/sub, inter-module communication
+├── ModuleRegistry              ← lifecycle manager (load/unload IModule instances)
+│   ├── NoteAnatomyModule
+│   ├── ConnectivityModule
+│   ├── FocalNodeModule
+│   └── CrossVaultModule
+└── ControlPanelView (sidebar)
+    ├── PresetManager           ← CRUD for saved layout presets
+    ├── LayoutEngine            ← sorts + renders WidgetHosts into DOM
+    └── WidgetHost (per slot)   ← header, height control, collapse, module.getView()
 ```
 
-If you have multiple URLs, you can also do:
+**Data / event flow:**
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
+```
+Obsidian workspace event
+        │
+        ▼
+ControlPanelView ──emit──► EventBus ──notify──► Module listeners
+                                                  │
+                                                  ▼
+                                           module re-renders its view
+                                           (already mounted in WidgetHost)
 ```
 
-## API Documentation
+Settings are persisted to Obsidian's `data.json` via `plugin.saveData()`. Layout presets and enabled-module flags live there.
 
-See https://docs.obsidian.md
+---
+
+## Major Components
+
+| Component | Location | Role |
+|---|---|---|
+| Plugin entry | [src/main.ts](src/main.ts) | Bootstrap, ribbon icon, command, settings tab |
+| EventBus | [src/core/event-bus.ts](src/core/event-bus.ts) | Typed pub/sub (`active-file-changed`, `layout-preset-changed`, `module-visibility`, `vault-scan-complete`, `metadata-changed`) |
+| ModuleRegistry | [src/core/module-registry.ts](src/core/module-registry.ts) | Register, retrieve, and lifecycle-manage `IModule` instances |
+| LayoutStore | [src/core/layout-store.ts](src/core/layout-store.ts) | Pure utility functions for preset and slot mutation |
+| IModule | [src/interfaces/i-module.ts](src/interfaces/i-module.ts) | Contract every module must satisfy |
+| ILayout / ISlot / IPreset | [src/interfaces/i-layout.ts](src/interfaces/i-layout.ts) | Layout data-shape definitions |
+| Settings | [src/settings/](src/settings/) | `PluginSettings` type, `DEFAULT_SETTINGS`, and the settings tab UI |
+| ControlPanelView | [src/framework/control-panel.view.ts](src/framework/control-panel.view.ts) | Sidebar `ItemView`; owns preset selector, calls `LayoutEngine.render()` |
+| LayoutEngine | [src/framework/layout-engine.ts](src/framework/layout-engine.ts) | Sorts slots by `order`, filters hidden, appends `WidgetHost` elements |
+| WidgetHost | [src/framework/widget-host.ts](src/framework/widget-host.ts) | Per-slot wrapper: title bar, height-mode dropdown, collapse toggle, `module.getView()` |
+| PresetManager | [src/framework/preset-manager.ts](src/framework/preset-manager.ts) | Add / rename / delete / switch presets; triggers save callback |
+| Note Anatomy module | [src/modules/note-anatomy/](src/modules/note-anatomy/) | Tab view: headings (jump-to-line), external URLs, cross-vault refs, frontmatter |
+| Connectivity module | [src/modules/connectivity/](src/modules/connectivity/) | Inbound/outbound link score leaderboard with folder filter |
+| Focal Node module | [src/modules/focal-node/](src/modules/focal-node/) | BFS graph (Cytoscape.js) of the active file's neighborhood |
+| Cross-Vault module | [src/modules/cross-vault/](src/modules/cross-vault/) | Vault-wide scanner for `obsidian://` URIs; CSV export |
+
+---
+
+## Folder & File Reference
+
+```
+src/
+├── main.ts                        ← plugin entry point
+├── settings.ts                    ← re-export shim → settings/settings.ts
+│
+├── core/
+│   ├── event-bus.ts               ← EventBus class
+│   ├── module-registry.ts         ← ModuleRegistry class
+│   └── layout-store.ts            ← preset/slot utility functions
+│
+├── interfaces/
+│   ├── i-module.ts                ← IModule interface
+│   └── i-layout.ts                ← HeightMode, ISlot, IPreset, IPluginLayout
+│
+├── settings/
+│   ├── settings.ts                ← PluginSettings type + DEFAULT_SETTINGS
+│   └── settings-tab.ts            ← Obsidian PluginSettingTab UI
+│
+├── framework/
+│   ├── control-panel.view.ts      ← main sidebar ItemView
+│   ├── layout-engine.ts           ← DOM renderer for module slots
+│   ├── widget-host.ts             ← per-slot UI wrapper
+│   └── preset-manager.ts          ← preset CRUD + persistence
+│
+└── modules/
+    ├── note-anatomy/
+    │   ├── note-anatomy.module.ts ← IModule impl; reads file + metadata cache
+    │   ├── note-anatomy.view.ts   ← tab-based UI (headings / URLs / cross-vault / frontmatter)
+    │   └── markdown-parser.ts     ← parseHeadings, parseExternalUrls, parseCrossVaultRefs
+    │
+    ├── connectivity/
+    │   ├── connectivity.module.ts ← IModule impl; debounced metadataCache listener
+    │   ├── connectivity.view.ts   ← leaderboard UI with inbound/outbound toggle
+    │   └── link-counter.ts        ← computeScores, filterAndSort
+    │
+    ├── focal-node/
+    │   ├── focal-node.module.ts   ← IModule impl; active-file-changed listener
+    │   ├── focal-node.view.ts     ← Cytoscape graph + depth slider
+    │   └── graph-builder.ts       ← BFS traversal; buildGraph, buildBacklinkIndex
+    │
+    └── cross-vault/
+        ├── cross-vault.module.ts  ← IModule impl; vault 'modify' listener (debounced)
+        ├── cross-vault.view.ts    ← table UI + scan/export buttons
+        ├── vault-scanner.ts       ← scans all .md files for obsidian:// URIs
+        └── csv-exporter.ts        ← RFC 4180 CSV builder + browser download trigger
+```
+
+---
+
+## Bootstrap Sequence
+
+1. `main.ts → onload()` — load saved settings, register the control-panel view type, add ribbon icon and command palette entry
+2. `ModuleRegistry.loadAll(app, eventBus)` — calls `module.onload()` on each of the four modules; each module registers its event listeners
+3. `activateControlPanel()` — opens (or focuses) the right-sidebar leaf and sets its view to `ControlPanelView`
+4. `ControlPanelView.onOpen()` — creates `PresetManager` from saved layout, builds the preset selector header, creates `LayoutEngine` + slot container, calls `render()` for the active preset
+5. `LayoutEngine.render()` — for each visible slot in order-sorted sequence, creates a `WidgetHost`, which calls `module.getView()` and mounts the result into the DOM
+
+---
+
+## Adding a New Module
+
+1. Create `src/modules/<name>/` with at minimum `<name>.module.ts` (implement `IModule`) and a view file
+2. In [src/main.ts](src/main.ts), import and register: `registry.register(new MyModule())`
+3. In [src/settings/settings.ts](src/settings/settings.ts), add `'<moduleId>': false` to `DEFAULT_SETTINGS.enabledModules`
+4. In [src/settings/settings-tab.ts](src/settings/settings-tab.ts), add a toggle for the new module ID
+
+The module will automatically appear as a collapsible slot in the control panel once enabled.
+
+---
+
+## Development
+
+```
+npm install          # install dependencies
+npm run dev          # watch mode (esbuild)
+npm run build        # production build
+```
+
+The compiled `main.js` is output to the plugin root and loaded directly by Obsidian.
