@@ -2,8 +2,8 @@ name: Create Release
 
 on:
   push:
-    tags:
-      - 'v*.*.*'  # Trigger on tags like v1.0.0, v1.0.1-beta, v2.1.0-rc, etc.
+    # tags:
+      # - 'v*.*.*'  # Trigger on tags like v1.0.0, v1.0.1-beta, v2.1.0-rc, etc.
 
 jobs:
   create-release:
