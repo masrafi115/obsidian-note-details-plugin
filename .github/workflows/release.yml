@@ -1,51 +1,39 @@
-name: Create Release
+name: Release Obsidian plugin
 
 on:
   push:
-    # tags:
-      # - 'v*.*.*'  # Trigger on tags like v1.0.0, v1.0.1-beta, v2.1.0-rc, etc.
+
+env:
+  PLUGIN_NAME: obsidian-note-details-plugin
 
 jobs:
-  create-release:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout Repository
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      # Step 2: Set Up Node.js
-      - name: Set up Node.js
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'  # Specify the Node.js version as needed
+          node-version: '18.x'
 
-      # Step 5: Build Project
-      - name: Install Dependencies and Build
+      - name: Build plugin
+        id: build
         run: |
           npm install
           npm run build
+          mkdir ${{ env.PLUGIN_NAME }}
+          cp main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}
+          zip -r ${{ env.PLUGIN_NAME }}.zip ${{ env.PLUGIN_NAME }}
 
-      # Step 4: Determine Release Type
-      - name: Set Release Type (Draft or Pre-release)
-        id: release_type
+      - name: Create release
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [[ "${GITHUB_REF}" == *"-beta"* || "${GITHUB_REF}" == *"-alpha"* || "${GITHUB_REF}" == *"-rc"* ]]; then
-            echo "prerelease=true" >> $GITHUB_ENV
-          else
-            echo "prerelease=false" >> $GITHUB_ENV
-          fi
+          tag="${GITHUB_REF#refs/tags/}"
 
-      # Step 9: Create GitHub Release with Asset
-      - name: Create GitHub Release
-        uses: ncipollo/release-action@v1.14.0  # Use the latest stable version
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref_name }}  # Ensure this extracts the tag name correctly
-          name: Release ${{ github.ref_name }}
-          body: |
-            ## Changes
-            - Add release notes here.
-          draft: false
-          prerelease: ${{ env.prerelease }}
- 
+          gh release create "$tag" \
+            --title="$tag" \
+            main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}.zip
